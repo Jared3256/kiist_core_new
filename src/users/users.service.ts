@@ -1,7 +1,9 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
+  PreconditionFailedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,6 +18,7 @@ export class UsersService {
     private userModel: mongoose.Model<User1Schema>,
   ) {}
 
+  private readonly logger = new Logger(UsersService.name);
   private users = [
     {
       id: 1,
@@ -45,7 +48,6 @@ export class UsersService {
    */
   async getAllUser(): Promise<User1Schema[]> {
     const myusers = await this.userModel.find();
-    console.log(myusers);
     if (!myusers.length) {
       throw new NotFoundException({
         success: false,
@@ -60,18 +62,29 @@ export class UsersService {
    *
    * @param id
    */
-  getUserById(id: number) {
-    const myUser = this.users.find((user) => user.id == id);
+  async getUserById(id: string) {
+    try {
+      if (id.length !== 24) {
+        this.logger.error('Invalid ID provided ' + id);
+        throw new PreconditionFailedException({
+          message: 'Invalid ID provided ',
+          success: false,
+        });
+      }
+      const myUser = await this.userModel.findById(id);
 
-    if (!myUser) {
-      throw new NotFoundException({
-        message: `User with id ${id} not found!`,
-        statusCode: 404,
-        success: false,
-      });
+      if (!myUser) {
+        throw new NotFoundException({
+          message: `User with id ${id} not found!`,
+          statusCode: 404,
+          success: false,
+        });
+      }
+
+      return myUser;
+    } catch (e) {
+      throw e;
     }
-
-    return myUser;
   }
 
   /**

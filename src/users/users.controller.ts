@@ -29,7 +29,7 @@ export class UsersController {
   }
 
   @Get(':id') // GET /api/v1/users/:id
-  getUserById(@Param('id') id: number) {
+  async getUserById(@Param('id') id: string) {
     return this.userService.getUserById(id);
   }
 

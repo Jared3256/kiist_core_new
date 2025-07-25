@@ -5,13 +5,18 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
+import { BooksModule } from './books/books.module';
+import { HealthModule } from './health/health.module';
 import configuration from './configuration/environment.configuration';
-import * as assert from 'node:assert';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      load: [configuration],
       isGlobal: true,
     }),
     MongooseModule.forRootAsync({
@@ -26,6 +31,9 @@ import * as assert from 'node:assert';
     }),
     UsersModule,
     OrdersModule,
+    BooksModule,
+    HealthModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

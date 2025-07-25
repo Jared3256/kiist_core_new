@@ -42,7 +42,7 @@ export class OrdersService {
 
   async createNewOrder(order): Promise<object> {
     try {
-      //Check if the user id is in the database
+      // Check if the user id is in the database
       const foundUser = await this.userModel.findById(order.user);
 
       if (!foundUser) {
